@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/simplemde.min.css')}}">
+    <style>
+      .preview-button::before {
+        content: "Preview/Download";
+      }
+      .preview-button {
+        width: 135px !important;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="textarea"></textarea>
+    <script src="{{ url_for('static', filename='js/simplemde.min.js')}}"></script>
+    <script>
+      var simplemde = new SimpleMDE({
+        autosave: {
+          enabled: true,
+          uniqueId: "lil-previewer",
+          delay: 100,
+        },
+        indentWithTabs: false,
+        showIcons: ["strikethrough"],
+        status: ["autosave"],
+        toolbar: [
+          "bold",
+          "italic",
+          "heading-2",
+          "heading-3", "|",
+          "quote",
+          "unordered-list",
+          "ordered-list",
+          "link",
+          "image", "|",
+          {
+            name: "custom-preview",
+            action: function (editor){
+              editor.togglePreview();
+              window.parent.preview();
+            },
+            className: "preview-button no-disable",
+            title: "Preview/Download",
+          }
+        ]
+      });
+      // Expose this instance of SimpleMDE to the parent window
+      parent.editor = simplemde;
+    </script>
+  </body>
+</html>

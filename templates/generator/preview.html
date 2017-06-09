@@ -1,0 +1,98 @@
+{% extends "generator/lil-scaffold.html" %}
+
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/simplemde.min.css')}}">
+{% endblock css %}
+
+{% block post %}
+  <div id="lil-preview-target" class="post-content" itemprop="articleBody">
+  </div>
+
+  <!-- The editor -->
+  <iframe id="editor" src="/editor" style="border: 1px solid #eee; width: 100%; min-height: 430px;"></iframe>
+
+  <!-- The edit and save buttons -->
+  <div id="lil-edit-wrapper" style="margin-top: 20px; display: none;">
+    <div style="display: inline-block; width: 49%;">
+      <a id="lil-edit" role="button" class="small-btn">Edit</a>
+    </div>
+    <div style="display: inline-block; width: 49%;">
+    <form method="post">
+      <input id="title" type="hidden" name="title" value="">
+      <input id="content" type="hidden" name="content" value="">
+      <button id="lil-export" role="button" class="small-btn">Download</button>
+    </form>
+    </div>
+  </div>
+
+  <div id="lil-instructions">
+    <p>You can enter any text you want into the editor, including HTML (audio/video embed tags...even script tags), and it will be rendered during preview as-is. So if you are tempted to paste in random javascript you find on the web, think twice.</p>
+
+    <h3>Images</h3>
+    <p>Upload your image using the <a href="https://lil-blog-uploader.herokuapp.com/" target="_blank">LIL blog media upload form</a>, and note the URL it assigns to your image. Use the editor's image button, swapping in the image URL for the placeholder. It should look like this, when you are done:</p>
+    <code>
+      ![Short description of the image.](https://lil-blog-uploader.herokuapp.com/my-image.png)
+    </code>
+
+    <h3>Videos</h3>
+    <p>Upload your video to the LIL vimeo account, and use this code to embed it, swapping in the correct url.</p>
+    <pre style="overflow: auto">
+&lt;div class="embed-container"&gt;
+  &lt;iframe src="https://player.vimeo.com/video/######"
+          width="640"
+          height="480"
+          frameborder="0"
+          webkitallowfullscreen
+          mozallowfullscreen
+          allowfullscreen>
+  &lt;/iframe&gt;
+&lt;/div&gt;
+    </pre>
+  </div>
+{% endblock post %}
+
+{% block scripts %}
+  <script>
+
+    function toggle_visibility(id) {
+      var e = document.getElementById(id);
+      if(e.style.display == 'none')
+        e.style.display = 'block';
+      else
+        e.style.display = 'none';
+    }
+
+    function toggle_edit_preview_view(){
+      toggle_visibility('editor');
+      toggle_visibility('lil-edit-wrapper');
+      toggle_visibility('lil-instructions');
+    }
+
+    var target = document.getElementById('lil-preview-target');
+
+    // This will be set to the active editor instance inside the iframe
+    var editor = null;
+
+    // This function is called from inside the iframe, when the preview
+    // button is pressed.
+    function preview(){
+      toggle_edit_preview_view();
+      // displays the html inside the actual blog post's content container,
+      // instead of inside the editor's (now hidden) iframe preview pane
+      target.innerHTML = document.getElementById('editor').contentWindow.document.getElementsByClassName('editor-preview')[0].innerHTML;
+      // update the download form's values
+      document.getElementById('title').value = document.getElementsByTagName('h1')[0].textContent;
+      document.getElementById('content').value = editor.value();
+    }
+
+    document.getElementById('lil-edit').onclick = function () {
+      // reset the blog post's content container
+      target.innerHTML = '';
+      // switch the (still hidden) editor back to edit mode
+      editor.togglePreview();
+      toggle_edit_preview_view();
+    }
+  </script>
+
+{% endblock scripts %}

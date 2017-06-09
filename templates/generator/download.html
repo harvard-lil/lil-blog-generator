@@ -1,0 +1,61 @@
+{% extends "no-flex.html" %}
+
+{% block content %}
+  <form style="width: 65.3333333333%; margin:auto;" action="/download" method="post">
+    <label class="required" for="title" required>
+      Post Title
+    </label>
+    <input required name="title" id="title" type="text" class="u-full-width" value="{{request.form['title']}}">
+
+    <label for="content">
+      Post Contents (read-only)
+    </label>
+    <textarea name="content" id="content" class="u-full-width" rows="12"
+    style="height: auto; background-color: #eee; border: none;" readonly>{{request.form['content']}}</textarea>
+
+    <div class="row">
+      <div class="four columns">
+        <label class="required" for="date">Post Date</label>
+        <input required name="date" id="date" type="date">
+      </div>
+      <div class="four columns">
+        <label class="required" for="author">Author</label>
+        <select required name="author" id="author">
+        {% for author in context['authors']%}<option value="{{author}}">{{author}}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="four columns">
+        <label for="tags">Tags/Categories</label>
+        <input name="tags" id="tags" type="text">
+      </div>
+    </div>
+    <div style="margin-top: 25px; margin-bottom: 25px; border: 1px solid #eee; padding-top: 25px;">
+     <ol>
+       <li>Download your post's markdown file</li>
+       <li>Upload it to <a href="https://github.com/harvard-lil/website-static/tree/develop/app/_posts">https://github.com/harvard-lil/website-static/tree/develop/app/_posts</a>. (Drag and drop is easiest!)</li>
+       <li>Pick the "<a href="https://github.com/blog/2105-upload-files-to-your-repositories" target="_blank">create new branch and make a pull request</a>" option <br> (rather than the "commit to the 'develop").</li>
+     </ol>
+    </div>
+
+    <p style="margin-top: 30px;">
+      <a class="button" href="/" style="margin-right: 15px">Edit Post</a>
+      <button class="button button-primary" type="submit">Download</button>
+    </p>
+
+  </form>
+  <script>
+    // Date picker defaults to today
+    document.getElementById('date').valueAsDate = new Date();
+    // Author stored in local storage for better UX
+    var author_select = document.getElementById('author');
+    var selectOption = author_select.options[author_select.selectedIndex];
+    var lastSelected = localStorage.getItem('default-author');
+    if(lastSelected) {
+        author_select.value = lastSelected;
+    }
+    author_select.onchange = function () {
+       lastSelected = author_select.options[author_select.selectedIndex].value;
+       localStorage.setItem('default-author', lastSelected);
+    }
+  </script>
+{% endblock content %}
