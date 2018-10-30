@@ -1,0 +1,6 @@
+pip-tools
+Flask
+gunicorn
+requests
+pyyaml
+unidecode
