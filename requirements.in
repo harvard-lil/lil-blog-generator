@@ -2,5 +2,5 @@ pip-tools
 Flask
 gunicorn
 requests
-pyyaml
+pyyaml>=4.2b1
 unidecode
