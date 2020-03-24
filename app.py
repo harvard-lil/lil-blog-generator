@@ -88,8 +88,8 @@ def slugify(text, delim=u'-'):
 ### ROUTES
 ###
 
-@login_required
 @app.route('/', methods=['GET', 'POST'])
+@login_required
 def landing():
     if request.method == 'POST':
         r = requests.get('https://raw.githubusercontent.com/harvard-lil/website-static/develop/app/_data/people.yaml')
@@ -98,8 +98,8 @@ def landing():
     return render_template('generator/preview.html', context={'heading': 'Preview Blog Post'})
 
 
-@login_required
 @app.route('/download', methods=['POST'])
+@login_required
 def download():
     md = io.BytesIO(bytes(render_template('generator/post.md'), 'utf-8'))
     filename = secure_filename(u'{}-{}.md'.format(request.form['date'], slugify(request.form['title'])))
@@ -110,8 +110,8 @@ def download():
                      as_attachment=True)
 
 
-@login_required
 @app.route('/editor')
+@login_required
 def editor():
     return render_template('generator/editor.html')
 
@@ -122,6 +122,7 @@ def login():
 
 
 @app.route("/logout")
+@login_required
 def logout():
     session.clear()
     return render_template('generic.html', context={'heading': "Logged Out",
