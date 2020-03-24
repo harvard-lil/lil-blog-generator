@@ -70,6 +70,7 @@
     }
 
     var target = document.getElementById('lil-preview-target');
+    var editable_title = document.getElementById('post-title');
 
     // This will be set to the active editor instance inside the iframe
     var editor = null;
@@ -82,17 +83,23 @@
       // instead of inside the editor's (now hidden) iframe preview pane
       target.innerHTML = document.getElementById('editor').contentWindow.document.getElementsByClassName('editor-preview')[0].innerHTML;
       // update the download form's values
-      document.getElementById('title').value = document.getElementsByTagName('h1')[0].textContent;
+      document.getElementById('title').value = editable_title.textContent;
       document.getElementById('content').value = editor.value();
     }
 
-    document.getElementById('lil-edit').onclick = function () {
+    document.getElementById('lil-edit').onclick = function (e) {
       // reset the blog post's content container
       target.innerHTML = '';
       // switch the (still hidden) editor back to edit mode
       editor.togglePreview();
       toggle_edit_preview_view();
     }
+
+    // persist changes to title field
+    editable_title.textContent = localStorage.getItem('post-title') || '...Type Your Title Here...';
+    editable_title.addEventListener('input', function() {
+        localStorage.setItem('post-title', this.textContent);
+    });
   </script>
 
 {% endblock scripts %}
