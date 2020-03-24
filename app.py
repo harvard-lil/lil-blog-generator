@@ -116,11 +116,6 @@ def editor():
     return render_template('generator/editor.html')
 
 
-@app.route('/login')
-def login():
-    return render_template('login.html', context={'heading': 'Log In', 'client_id': app.config['GITHUB_CLIENT_ID']})
-
-
 @app.route("/logout")
 @login_required
 def logout():
