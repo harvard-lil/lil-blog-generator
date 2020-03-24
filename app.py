@@ -1,13 +1,17 @@
-from os import environ
 from ast import literal_eval
-import requests
-from functools import wraps
-from urllib.parse import urlparse, urljoin
 from datetime import datetime, timedelta
+from functools import wraps
+import io
+from os import environ
+import re
+import requests
+from unidecode import unidecode
+from urllib.parse import urlparse, urljoin
+from werkzeug.utils import secure_filename
+from yaml import safe_load
 
-from flask import Flask, request, redirect, session, abort, url_for, render_template
+from flask import Flask, request, redirect, session, abort, url_for, render_template, send_file
 import error_handling
-from proxy import proxy_request
 
 import logging
 
@@ -39,6 +43,7 @@ def setup_logging():
         app.logger.addHandler(logging.StreamHandler())
         app.logger.setLevel(getattr(logging, app.config['LOG_LEVEL']))
 
+
 def login_required(func):
     @wraps(func)
     def handle_login(*args, **kwargs):
@@ -57,6 +62,7 @@ def login_required(func):
             return redirect('{}?scope=read:org&client_id={}'.format(AUTHORIZE_URL, app.config['GITHUB_CLIENT_ID']))
     return handle_login
 
+
 def is_safe_url(target):
     '''
         Ensure a url is safe to redirect to, from WTForms
@@ -67,38 +73,53 @@ def is_safe_url(target):
     return test_url.scheme in ('http', 'https') and \
            ref_url.netloc == test_url.netloc
 
+
+_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
+
+def slugify(text, delim=u'-'):
+    """Generates an ASCII-only slug."""
+    result = []
+    for word in _punct_re.split(text.lower()):
+        result.extend(unidecode(word).split())
+    return str(delim.join(result))
+
+
 ###
 ### ROUTES
 ###
 
-@app.route('/', defaults={'path': ''}, methods=['GET', 'POST'])
-@app.route('/<path:path>', methods=['GET', 'POST'])
 @login_required
-def catch_all(path):
-    '''
-        All requests are caught by this route, unless explicitly caught by
-        other more specific patterns.
-        http://flask.pocoo.org/docs/0.12/design/#the-routing-system
-    '''
-    def fallback():
-        return render_template('generic.html', context={'heading': "lil-blog-generator",
-                                                        'message': "a static site helper"})
+@app.route('/', methods=['GET', 'POST'])
+def landing():
+    if request.method == 'POST':
+        r = requests.get('https://raw.githubusercontent.com/harvard-lil/website-static/develop/app/_data/people.yaml')
+        authors = sorted(safe_load(r.text).keys())
+        return render_template('generator/download.html', context={'heading': 'Download Post', 'authors': authors})
+    return render_template('generator/preview.html', context={'heading': 'Preview Blog Post'})
 
-    try:
-        proxied_response = proxy_request(request, path)
-        if proxied_response:
-            return proxied_response
-        else:
-            app.logger.warning("No response returned by proxied endpoint.")
-            return fallback()
-    except NameError:
-        app.logger.warning("No proxy function available.")
-        return fallback()
+
+@login_required
+@app.route('/download', methods=['POST'])
+def download():
+    md = io.BytesIO(bytes(render_template('generator/post.md'), 'utf-8'))
+    filename = secure_filename(u'{}-{}.md'.format(request.form['date'], slugify(request.form['title'])))
+    if not filename:
+        filename = u'yyyy-mm-dd-your-title-here.md'
+    return send_file(md,
+                     attachment_filename=filename,
+                     as_attachment=True)
+
+
+@login_required
+@app.route('/editor')
+def editor():
+    return render_template('generator/editor.html')
 
 
 @app.route('/login')
 def login():
     return render_template('login.html', context={'heading': 'Log In', 'client_id': app.config['GITHUB_CLIENT_ID']})
+
 
 @app.route("/logout")
 def logout():
