@@ -2,7 +2,7 @@ from os import environ
 from ast import literal_eval
 import requests
 from functools import wraps
-from urlparse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin
 from datetime import datetime, timedelta
 
 from flask import Flask, request, redirect, session, abort, url_for, render_template

@@ -1,5 +1,5 @@
 import re
-import StringIO
+import io
 import requests
 from yaml import safe_load
 from unidecode import unidecode
@@ -15,7 +15,7 @@ def slugify(text, delim=u'-'):
     result = []
     for word in _punct_re.split(text.lower()):
         result.extend(unidecode(word).split())
-    return unicode(delim.join(result))
+    return str(delim.join(result))
 
 def proxy_request(request, path):
     '''
@@ -45,7 +45,7 @@ def proxy_request(request, path):
         http://flask.pocoo.org/docs/0.12/api/#flask.Flask.make_response
     '''
     if path == 'download' and request.method == 'POST':
-        md = StringIO.StringIO(render_template('generator/post.md').encode('utf-8'))
+        md = io.BytesIO(bytes(render_template('generator/post.md'), 'utf-8'))
         filename = secure_filename(u'{}-{}.md'.format(request.form['date'], slugify(request.form['title'])))
         if not filename:
             filename = u'yyyy-mm-dd-your-title-here.md'
