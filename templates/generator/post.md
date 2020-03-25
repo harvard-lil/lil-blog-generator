@@ -1,4 +1,3 @@
 ---
-{{ context['head_matter'] }}
----
+{{ context['head_matter'] }}---
 {{ request.form['content'] }}

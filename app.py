@@ -101,12 +101,13 @@ def landing():
 @app.route('/download', methods=['POST'])
 @login_required
 def download():
+
     # assemble the yaml head matter
     head_matter = {'title': request.form['title']}
-    if request.form['author']:
+    if request.form['author-type'] == 'author':
         head_matter['author'] = request.form['author']
-    elif request.form['guest-author']:
-        head_matter['author'] = request.form['author']
+    else:
+        head_matter['guest-author'] = request.form['author']
     if request.form['tags']:
         head_matter['tags'] = request.form['tags'].split(' ')
     head_matter = dump(head_matter, sort_keys=False)
