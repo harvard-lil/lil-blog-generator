@@ -8,7 +8,7 @@ import requests
 from unidecode import unidecode
 from urllib.parse import urlparse, urljoin
 from werkzeug.utils import secure_filename
-from yaml import safe_load
+from yaml import safe_load, dump
 
 from flask import Flask, request, redirect, session, abort, url_for, render_template, send_file
 import error_handling
@@ -101,7 +101,21 @@ def landing():
 @app.route('/download', methods=['POST'])
 @login_required
 def download():
-    md = io.BytesIO(bytes(render_template('generator/post.md'), 'utf-8'))
+
+    # assemble the yaml head matter
+    head_matter = {'title': request.form['title']}
+    if request.form['author-type'] == 'author':
+        head_matter['author'] = request.form['author']
+    else:
+        head_matter['guest-author'] = request.form['author']
+    if request.form['tags']:
+        head_matter['tags'] = request.form['tags'].split(' ')
+    head_matter = dump(head_matter, sort_keys=False)
+
+    # assemble the head matter and the markdown
+    md = io.BytesIO(bytes(render_template('generator/post.md', context={'head_matter': head_matter}), 'utf-8'))
+
+    # send the file
     filename = secure_filename(u'{}-{}.md'.format(request.form['date'], slugify(request.form['title'])))
     if not filename:
         filename = u'yyyy-mm-dd-your-title-here.md'
