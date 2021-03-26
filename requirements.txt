@@ -30,7 +30,7 @@ pep517==0.10.0
     # via pip-tools
 pip-tools==6.0.1
     # via -r requirements.in
-pyyaml==5.3.1
+pyyaml==5.4.1
     # via -r requirements.in
 requests==2.23.0
     # via -r requirements.in
