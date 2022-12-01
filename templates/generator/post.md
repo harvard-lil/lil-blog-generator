@@ -1,3 +1,3 @@
 ---
 {{ context['head_matter'] }}---
-{{ request.form['content'] }}
+{{ request.form['content'].replace("\r\n", "\n") }}
