@@ -4,45 +4,47 @@
 #
 #    pip-compile
 #
-certifi==2019.11.28
+certifi==2021.5.30
     # via requests
-chardet==3.0.4
+chardet==4.0.0
     # via requests
-click==7.1.1
+click==8.0.1
     # via
     #   flask
     #   pip-tools
-flask==1.1.1
+flask==2.0.1
     # via -r requirements.in
-gunicorn==20.0.4
+gunicorn==20.1.0
     # via -r requirements.in
-idna==2.9
+idna==2.10
     # via requests
-importlib-metadata==3.7.3
-    # via pep517
-itsdangerous==1.1.0
+importlib-metadata==4.5.0
+    # via
+    #   click
+    #   pep517
+itsdangerous==2.0.1
     # via flask
-jinja2==2.11.3
+jinja2==3.0.1
     # via flask
-markupsafe==1.1.1
+markupsafe==2.0.1
     # via jinja2
 pep517==0.10.0
     # via pip-tools
-pip-tools==6.0.1
+pip-tools==6.1.0
     # via -r requirements.in
 pyyaml==5.4.1
     # via -r requirements.in
-requests==2.23.0
+requests==2.25.1
     # via -r requirements.in
 toml==0.10.2
     # via pep517
-typing-extensions==3.7.4.3
+typing-extensions==3.10.0.0
     # via importlib-metadata
-unidecode==1.1.1
+unidecode==1.2.0
     # via -r requirements.in
-urllib3==1.25.8
+urllib3==1.26.5
     # via requests
-werkzeug==1.0.0
+werkzeug==2.0.1
     # via flask
 zipp==3.4.1
     # via
