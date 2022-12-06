@@ -21,6 +21,7 @@
     <form method="post">
       <input id="title" type="hidden" name="title" value="">
       <input id="content" type="hidden" name="content" value="">
+      <input id="custom-excerpt" type="hidden" name="custom-excerpt" value="">
       <button id="lil-export" role="button" class="small-btn">Download</button>
     </form>
     </div>
@@ -28,6 +29,13 @@
 
   <div id="lil-instructions">
     <p>You can enter any text you want into the editor, including HTML (audio/video embed tags...even script tags), and it will be rendered during preview as-is. So if you are tempted to paste in random javascript you find on the web, think twice.</p>
+
+    <h3 id="post-excerpt">Post Excerpt</h3>
+    You can configure how much of your post will appear on the [blog's index page](https://lil.law.harvard.edu/blog).
+
+    The default is to show a "read more" link after the first paragraph.
+
+    To move the "read more" button somewhere else, paste <code>&lt;!--more--&gt;</code> wherever you'd like it to appear.
 
     <h3>Images</h3>
     <p>Upload your image using the <a href="https://lil-blog-uploader.herokuapp.com/" target="_blank">LIL blog media upload form</a>, and note the URL it assigns to your image. Use the editor's image button, swapping in the image URL for the placeholder. It should look like this, when you are done:</p>

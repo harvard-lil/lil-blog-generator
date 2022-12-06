@@ -33,6 +33,8 @@ ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token'
 ORGS_URL = 'https://api.github.com/user/orgs'
 REVOKE_TOKEN_URL = 'https://api.github.com/applications/{}/token'.format(app.config['GITHUB_CLIENT_ID'])
 
+EXCERPT_SEPARATOR = '<!--more-->'
+
 ###
 ### UTILS ###
 ###
@@ -98,7 +100,21 @@ def landing():
     if request.method == 'POST':
         r = requests.get('https://raw.githubusercontent.com/harvard-lil/website-static/develop/app/_data/people.yaml')
         authors = sorted(safe_load(r.text).keys())
-        return render_template('generator/download.html', context={'heading': 'Download Post', 'authors': authors})
+        if EXCERPT_SEPARATOR in request.form['content']:
+            excerpt_type = 'Custom'
+            excerpt = request.form['content'].split(EXCERPT_SEPARATOR)[0]
+        else:
+            excerpt_type = 'Default'
+            excerpt = request.form['content'].split("\r\n")[0]
+        return render_template(
+            'generator/download.html',
+            context={
+                'heading': 'Download Post',
+                'authors': authors,
+                'excerpt_type': excerpt_type,
+                'excerpt': excerpt
+            }
+        )
     return render_template('generator/preview.html', context={'heading': 'Preview Blog Post'})
 
 
@@ -112,6 +128,8 @@ def download():
         head_matter['author'] = request.form['author']
     else:
         head_matter['guest-author'] = request.form['author']
+    if request.form['excerpt-type'] == 'Custom':
+        head_matter['excerpt_separator'] = EXCERPT_SEPARATOR
     if request.form['tags']:
         head_matter['tags'] = request.form['tags'].split(' ')
     head_matter = dump(head_matter, sort_keys=False)

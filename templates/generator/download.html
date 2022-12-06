@@ -35,6 +35,10 @@
     <textarea name="content" id="content" class="u-full-width" rows="12"
     style="height: auto; background-color: #eee; border: none;" readonly>{{request.form['content']}}</textarea>
 
+    <input type="hidden" name="excerpt-type" value="{{context['excerpt_type']}}">
+    <label for="excerpt">Excerpt ({{context['excerpt_type']}})</label>
+    <textarea name="excerpt" id="excerpt" class="u-full-width" rows="12" style="height: auto; background-color: #eee; border: none;" readonly>{{context['excerpt']}}</textarea>
+
     <div style="margin-top: 25px; margin-bottom: 25px; border: 1px solid #eee; padding-top: 25px;">
      <ol>
        <li>Download your post's markdown file</li>
