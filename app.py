@@ -23,6 +23,7 @@ app.config['SECRET_KEY'] = environ.get('FLASK_SECRET_KEY')
 app.config['SESSION_COOKIE_SECURE'] = literal_eval(environ.get('SESSION_COOKIE_SECURE', 'True'))
 app.config['LOGIN_EXPIRY_MINUTES'] = environ.get('LOGIN_EXPIRY', 30)
 app.config['LOG_LEVEL'] = environ.get('LOG_LEVEL', 'WARNING')
+app.config['BYPASS_LOGIN'] = environ.get('BYPASS_LOGIN', False)
 
 # register error handlers
 error_handling.init_app(app)
@@ -45,22 +46,25 @@ def setup_logging():
 
 
 def login_required(func):
-    @wraps(func)
-    def handle_login(*args, **kwargs):
-        logged_in = session.get('logged_in')
-        valid_until = session.get('valid_until')
-        if valid_until:
-            valid = datetime.strptime(valid_until, '%Y-%m-%d %H:%M:%S') > datetime.utcnow()
-        else:
-            valid = False
-        if logged_in and logged_in == "yes" and valid:
-            app.logger.debug("User session valid")
-            return func(*args, **kwargs)
-        else:
-            app.logger.debug("Redirecting to GitHub")
-            session['next'] = request.url
-            return redirect('{}?scope=read:org&client_id={}'.format(AUTHORIZE_URL, app.config['GITHUB_CLIENT_ID']))
-    return handle_login
+    if app.debug and not app.config['BYPASS_LOGIN']:
+        @wraps(func)
+        def handle_login(*args, **kwargs):
+            logged_in = session.get('logged_in')
+            valid_until = session.get('valid_until')
+            if valid_until:
+                valid = datetime.strptime(valid_until, '%Y-%m-%d %H:%M:%S') > datetime.utcnow()
+            else:
+                valid = False
+            if logged_in and logged_in == "yes" and valid:
+                app.logger.debug("User session valid")
+                return func(*args, **kwargs)
+            else:
+                app.logger.debug("Redirecting to GitHub")
+                session['next'] = request.url
+                return redirect('{}?scope=read:org&client_id={}'.format(AUTHORIZE_URL, app.config['GITHUB_CLIENT_ID']))
+        return handle_login
+    app.logger.warning('Login disabled!')
+    return func
 
 
 def is_safe_url(target):

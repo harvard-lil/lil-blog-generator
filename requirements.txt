@@ -18,10 +18,6 @@ gunicorn==20.1.0
     # via -r requirements.in
 idna==2.10
     # via requests
-importlib-metadata==4.5.0
-    # via
-    #   click
-    #   pep517
 itsdangerous==2.0.1
     # via flask
 jinja2==3.0.1
@@ -32,24 +28,20 @@ pep517==0.10.0
     # via pip-tools
 pip-tools==6.1.0
     # via -r requirements.in
+python-dotenv==0.21.0
+    # via -r requirements.in
 pyyaml==5.4.1
     # via -r requirements.in
 requests==2.25.1
     # via -r requirements.in
 toml==0.10.2
     # via pep517
-typing-extensions==3.10.0.0
-    # via importlib-metadata
 unidecode==1.2.0
     # via -r requirements.in
 urllib3==1.26.5
     # via requests
 werkzeug==2.0.1
     # via flask
-zipp==3.4.1
-    # via
-    #   importlib-metadata
-    #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

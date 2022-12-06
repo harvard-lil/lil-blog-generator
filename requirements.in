@@ -4,3 +4,4 @@ gunicorn
 requests
 pyyaml>=4.2b1
 unidecode
+python-dotenv
