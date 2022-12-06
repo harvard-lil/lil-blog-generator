@@ -128,8 +128,11 @@ def download():
         head_matter['author'] = request.form['author']
     else:
         head_matter['guest-author'] = request.form['author']
-    if request.form['excerpt-type'] == 'Custom':
-        head_matter['excerpt_separator'] = EXCERPT_SEPARATOR
+    if request.form['use-excerpt'] == 'yes':
+        if request.form['excerpt-type'] == 'Custom':
+            head_matter['excerpt_separator'] = EXCERPT_SEPARATOR
+    else:
+        head_matter['no-excerpt'] = True
     if request.form['tags']:
         head_matter['tags'] = request.form['tags'].split(' ')
     head_matter = dump(head_matter, sort_keys=False)

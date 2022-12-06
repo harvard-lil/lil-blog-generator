@@ -21,3 +21,16 @@ label.required:after {
   content:"*";
   color:red;
 }
+
+form {
+  text-align: left;
+}
+
+.use-excerpt label {
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.use-excerpt input:after {
+  content: "&nbsp;";
+}
