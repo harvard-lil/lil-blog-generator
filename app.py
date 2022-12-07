@@ -23,6 +23,7 @@ app.config['SECRET_KEY'] = environ.get('FLASK_SECRET_KEY')
 app.config['SESSION_COOKIE_SECURE'] = literal_eval(environ.get('SESSION_COOKIE_SECURE', 'True'))
 app.config['LOGIN_EXPIRY_MINUTES'] = environ.get('LOGIN_EXPIRY', 30)
 app.config['LOG_LEVEL'] = environ.get('LOG_LEVEL', 'WARNING')
+app.config['BYPASS_LOGIN'] = environ.get('BYPASS_LOGIN', False)
 
 # register error handlers
 error_handling.init_app(app)
@@ -31,6 +32,8 @@ AUTHORIZE_URL = 'https://github.com/login/oauth/authorize'
 ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token'
 ORGS_URL = 'https://api.github.com/user/orgs'
 REVOKE_TOKEN_URL = 'https://api.github.com/applications/{}/token'.format(app.config['GITHUB_CLIENT_ID'])
+
+EXCERPT_SEPARATOR = '<!--more-->'
 
 ###
 ### UTILS ###
@@ -45,22 +48,25 @@ def setup_logging():
 
 
 def login_required(func):
-    @wraps(func)
-    def handle_login(*args, **kwargs):
-        logged_in = session.get('logged_in')
-        valid_until = session.get('valid_until')
-        if valid_until:
-            valid = datetime.strptime(valid_until, '%Y-%m-%d %H:%M:%S') > datetime.utcnow()
-        else:
-            valid = False
-        if logged_in and logged_in == "yes" and valid:
-            app.logger.debug("User session valid")
-            return func(*args, **kwargs)
-        else:
-            app.logger.debug("Redirecting to GitHub")
-            session['next'] = request.url
-            return redirect('{}?scope=read:org&client_id={}'.format(AUTHORIZE_URL, app.config['GITHUB_CLIENT_ID']))
-    return handle_login
+    if app.debug and not app.config['BYPASS_LOGIN']:
+        @wraps(func)
+        def handle_login(*args, **kwargs):
+            logged_in = session.get('logged_in')
+            valid_until = session.get('valid_until')
+            if valid_until:
+                valid = datetime.strptime(valid_until, '%Y-%m-%d %H:%M:%S') > datetime.utcnow()
+            else:
+                valid = False
+            if logged_in and logged_in == "yes" and valid:
+                app.logger.debug("User session valid")
+                return func(*args, **kwargs)
+            else:
+                app.logger.debug("Redirecting to GitHub")
+                session['next'] = request.url
+                return redirect('{}?scope=read:org&client_id={}'.format(AUTHORIZE_URL, app.config['GITHUB_CLIENT_ID']))
+        return handle_login
+    app.logger.warning('Login disabled!')
+    return func
 
 
 def is_safe_url(target):
@@ -94,7 +100,21 @@ def landing():
     if request.method == 'POST':
         r = requests.get('https://raw.githubusercontent.com/harvard-lil/website-static/develop/app/_data/people.yaml')
         authors = sorted(safe_load(r.text).keys())
-        return render_template('generator/download.html', context={'heading': 'Download Post', 'authors': authors})
+        if EXCERPT_SEPARATOR in request.form['content']:
+            excerpt_type = 'Custom'
+            excerpt = request.form['content'].split(EXCERPT_SEPARATOR)[0]
+        else:
+            excerpt_type = 'Default'
+            excerpt = request.form['content'].split("\r\n")[0]
+        return render_template(
+            'generator/download.html',
+            context={
+                'heading': 'Download Post',
+                'authors': authors,
+                'excerpt_type': excerpt_type,
+                'excerpt': excerpt
+            }
+        )
     return render_template('generator/preview.html', context={'heading': 'Preview Blog Post'})
 
 
@@ -108,6 +128,11 @@ def download():
         head_matter['author'] = request.form['author']
     else:
         head_matter['guest-author'] = request.form['author']
+    if request.form['use-excerpt'] == 'yes':
+        if request.form['excerpt-type'] == 'Custom':
+            head_matter['excerpt_separator'] = EXCERPT_SEPARATOR
+    else:
+        head_matter['no-excerpt'] = True
     if request.form['tags']:
         head_matter['tags'] = request.form['tags'].split(' ')
     head_matter = dump(head_matter, sort_keys=False)

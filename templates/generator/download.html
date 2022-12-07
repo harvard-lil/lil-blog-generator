@@ -35,6 +35,21 @@
     <textarea name="content" id="content" class="u-full-width" rows="12"
     style="height: auto; background-color: #eee; border: none;" readonly>{{request.form['content']}}</textarea>
 
+    <br>
+    <br>
+
+    <fieldset class="use-excerpt">
+      <legend>Excerpt on blog's index page?</legend>
+      <label><input type="radio" name="use-excerpt" value="yes" checked="checked">&nbsp;Yes</label>
+      <label><input type="radio" name="use-excerpt" value="no">&nbsp;No</label>
+    </fieldset>
+
+    <div id="excerpt-fields">
+      <input type="hidden" name="excerpt-type" value="{{context['excerpt_type']}}">
+      <label for="excerpt">{{context['excerpt_type']}} Excerpt</label>
+      <textarea name="excerpt" id="excerpt" class="u-full-width" rows="12" style="height: auto; background-color: #eee; border: none;" readonly>{{context['excerpt']}}</textarea>
+    </div>
+
     <div style="margin-top: 25px; margin-bottom: 25px; border: 1px solid #eee; padding-top: 25px;">
      <ol>
        <li>Download your post's markdown file</li>
@@ -54,11 +69,11 @@
     document.getElementById('date').valueAsDate = new Date();
 
     // Toggle between author and guest author
-    var author_column = document.getElementById('author-column');
-    var author_select = document.getElementById('author-selector');
-    var guest_author = document.getElementById('guest-author');
-    var author = document.getElementById('author');
-    var guest_author_input = document.createElement('input');
+    const author_column = document.getElementById('author-column');
+    const author_select = document.getElementById('author-selector');
+    const guest_author = document.getElementById('guest-author');
+    const author = document.getElementById('author');
+    const guest_author_input = document.createElement('input');
     guest_author_input.type = 'text';
     guest_author_input.name = 'author';
     guest_author_input.setAttribute('aria-label' , 'guest author name');
@@ -79,8 +94,8 @@
     author.click();
 
     // Author stored in local storage for better UX
-    var selectOption = author_select.options[author_select.selectedIndex];
-    var lastSelected = localStorage.getItem('default-author');
+    const selectOption = author_select.options[author_select.selectedIndex];
+    const lastSelected = localStorage.getItem('default-author');
     if(lastSelected) {
         author_select.value = lastSelected;
     }
@@ -88,5 +103,19 @@
        lastSelected = author_select.options[author_select.selectedIndex].value;
        localStorage.setItem('default-author', lastSelected);
     }
+
+    // If you opt not to use the excerpt, hide the other excerpt-related fields
+    const excerptFields = document.getElementById('excerpt-fields');
+    if (document.querySelector('input[name="use-excerpt"]:checked').value == "no"){
+      excerptFields.style.display = 'none';
+    }
+    document.querySelector('.use-excerpt').onchange = function(e) {
+      if (e.target.value == "no") {
+        excerptFields.style.display = 'none';
+      } else {
+        excerptFields.style.display = 'block';
+      }
+    }
+
   </script>
 {% endblock content %}
