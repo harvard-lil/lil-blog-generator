@@ -97,6 +97,7 @@ def slugify(text, delim=u'-'):
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def landing():
+    site = 'h2o' if request.cookies.get('site') == 'h2o' else 'lil'
     if request.method == 'POST':
         r = requests.get('https://raw.githubusercontent.com/harvard-lil/website-static/develop/app/_data/people.yaml')
         authors = sorted(safe_load(r.text).keys())
@@ -112,10 +113,16 @@ def landing():
                 'heading': 'Download Post',
                 'authors': authors,
                 'excerpt_type': excerpt_type,
-                'excerpt': excerpt
+                'excerpt': excerpt,
+                'github_url': 'https://github.com/harvard-lil/website-static/tree/develop/app/_posts' if site == 'lil' else 'https://github.com/harvard-lil/h2o-static/tree/develop/app/_posts'
             }
         )
-    return render_template('generator/preview.html', context={'heading': 'Preview Blog Post'})
+
+    return render_template('generator/preview.html', context={
+        'scaffold': f'generator/{site}-scaffold.html',
+        'toggle': 'H2O' if site == 'lil' else 'LIL',
+        'index_url': 'https://lil.law.harvard.edu/blog' if site == 'lil' else 'https://about.opencasebook.org/blog/'
+    })
 
 
 @app.route('/download', methods=['POST'])

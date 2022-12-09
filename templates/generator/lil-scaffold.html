@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="lil">
 
   <head>
     <meta charset="utf-8">
@@ -11,10 +11,12 @@
     <link rel="apple-touch-icon" href="/static/assets/images/apple-touch-icon.png">
     <link rel="stylesheet" href="/static/assets/css/main.css">
     <link rel="stylesheet" href="/static/assets/css/blog.css">
+    <link rel="stylesheet" href="/static/css/triangle.css">
   </head>
 
   <body class="post">
-
+    {% block toggle_site %}
+    {% endblock toggle_site %}
     <header>
       <nav>
         <ul>
