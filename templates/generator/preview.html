@@ -1,9 +1,9 @@
-{% extends "generator/lil-scaffold.html" %}
+{% extends context['scaffold'] %}
 
-{% block css %}
-  {{ super() }}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/simplemde.min.css')}}">
-{% endblock css %}
+{% block toggle_site %}
+  <div id="triangle-topright"></div>
+  <div id="toggle-site-preview" role="button" tabindex="0">Preview {{ context['toggle']}}</div>
+{% endblock toggle_site %}
 
 {% block post %}
   <div id="lil-preview-target" class="post-content" itemprop="articleBody">
@@ -31,7 +31,7 @@
     <p>You can enter any text you want into the editor, including HTML (audio/video embed tags...even script tags), and it will be rendered during preview as-is. So if you are tempted to paste in random javascript you find on the web, think twice.</p>
 
     <h3 id="post-excerpt">Post Excerpt</h3>
-    You can configure how much of your post will appear on the <a href="https://lil.law.harvard.edu/blog">blog's index page</a>.
+    You can configure how much of your post will appear on the <a href="{{ context['index_url'] }}">blog's index page</a>.
 
     The default is to show a "read more" link after the first paragraph.
 
@@ -64,6 +64,28 @@
 
 {% block scripts %}
   <script>
+
+    function toggle_site() {
+      console.log(document.cookie);
+      if (document.cookie.includes("site=h2o")) {
+        document.cookie = "site=lil; samesite=lax"
+      } else {
+        document.cookie = "site=h2o; samesite=lax"
+      }
+      document.location.reload()
+    }
+
+
+    const site_toggler = document.getElementById('toggle-site-preview');
+    site_toggler.onclick = toggle_site
+    // Make this div behave like a button:
+    // - activates when the spacebar  or enter is pressed
+    // - the browser should not scroll
+    site_toggler.addEventListener('keypress', function(e){
+      if (e.key == ' ' || e.key == 'Enter') {
+        e.preventDefault(); this.click();
+      }
+    }, false);
 
     function toggle_visibility(id) {
       var e = document.getElementById(id);

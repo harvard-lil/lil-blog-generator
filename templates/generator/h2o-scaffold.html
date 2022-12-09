@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" class="h2o">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>LIL Preview</title>
+    <link rel="stylesheet" href="/static/assets/css/h2o-main.css">
+    <link rel="stylesheet" href="/static/css/triangle.css">
+  </head>
+  <body class="blog">
+
+    {% block toggle_site %}
+    {% endblock toggle_site %}
+
+    <header class="blog-header">
+        <a href="#main" class="skip-link">Skip to main content</a>
+        <a href="#footer" class="skip-link">Skip to footer</a>
+        <div class="main-header">
+            <a class="blog-header-logo" href="/blog/">H2O Blog</a>
+        </div>
+    </header>
+
+    <main>
+      <p id="main" tabindex="-1" class="sr-only">Main Content</p>
+      <div class="post-index-container">
+
+        <article class="post-index-post">
+          <div class="post-header">
+            <time class="post-date" datetime="2016-04-04T00:00:00+00:00">April 4, 2016</time>
+            <h1 id="post-title" class="post-title" contenteditable></h1>
+            <div class="post-author">By <a href="https://lil.law.harvard.edu/about/#joe-yacoboski">Joe Yacoboski</a></div>
+          </div>
+          <div class="post-content">
+            <br>
+            {% block post %}
+            {% endblock post %}
+          </div>
+          <br>
+        </article>
+
+      </div>
+    </main>
+
+    <footer id="footer">
+      <div class="footer-wrapper">
+        <div class="footer-links">
+          <ul>
+            <li><a href="https://opencasebook.org/">Home</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="https://opencasebook.org/pages/terms-of-service">Terms of Service</a></li>
+            <li><a href="https://opencasebook.org/pages/privacy-policy">Privacy Policy</a></li>
+            <li><a href="https://accessibility.huit.harvard.edu/digital-accessibility-policy">Accessibility</a></li>
+            <li><a href="https://opencasebook.org/pages/about">About</a></li>
+            <li><a href="/">Help Guide</a></li>
+            <li><a href="mailto:lil@law.harvard.edu?subject=Contact%20re%20H2O">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-copyright">
+        </div>
+      </div>
+    </footer>
+
+    {% block scripts %}
+    {% endblock scripts %}
+
+  </body>
+</html>

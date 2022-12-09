@@ -1,0 +1,38 @@
+#triangle-topright {
+  width: 0;
+  height: 0;
+  border-top: 150px solid black;
+  border-left: 150px solid transparent;
+  z-index: 9998;
+}
+
+#triangle-topright, #toggle-site-preview {
+  position: absolute;
+  color: white;
+  right: 0;
+}
+
+#toggle-site-preview {
+  transform: rotate(45deg);
+  z-index: 9999;
+}
+
+#toggle-site-preview {
+  font-family: sans-serif;
+  line-height: 20px;
+  transform-origin: -10% 100%;
+}
+
+/*html.h2o #toggle-site-preview {
+  transform-origin: -10% 50%;
+}
+
+html.h2o #toggle-site-preview {
+  transform-origin: -10% 50%;
+}*/
+
+#toggle-site-preview:hover, #toggle-site-preview:focus {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
