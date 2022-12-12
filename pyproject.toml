@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "lil-blog-generator"
+version = "0.1.0"
+description = ""
+authors = ["Library Innovation Lab <lil@law.harvard.edu>"]
+readme = "README.md"
+packages = [{include = "lil_blog_generator"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "^2.2.2"
+gunicorn = "^20.1.0"
+requests = "^2.28.1"
+pyyaml = "^6.0"
+unidecode = "^1.3.6"
+python-dotenv = "^0.21.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
