@@ -8,19 +8,17 @@ Write your post using the WYSIWYG editor, then click the download button. You'll
 
 ## Running locally
 
-1. Make a virtual environment and install requirements:
+1. [Install Poetry](https://python-poetry.org/docs/#installation) and install requirements:
 
 ```
-pyenv virtualenv blog-generator
-pyenv activate blog-generator
-pip install -r requirements.txt
+poetry install
 ```
 
 2. Configure local settings:
 
 ```
 echo "FLASK_SECRET_KEY=adjkahflashfjdlsahfjahlsdfa" >> .flaskenv
-echo "FLASK_ENV=development" >> .flaskenv
+echo "FLASK_DEBUG=1" >> .flaskenv
 ```
 
 ### (Recommended)
@@ -33,9 +31,14 @@ echo "BYPASS_LOGIN=True" >> .flaskenv
 3. Run the Flask development server
 
 ```
-flask run
+poetry run flask run
 ```
 
+For deployment, if you make changes to `poetry.lock`, e.g. with `poetry add <package>`, export the conventional requirements file:
+
+```
+poetry export -o requirements.txt
+```
 
 ## Authentication via Github
 
