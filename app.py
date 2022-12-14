@@ -152,7 +152,7 @@ def download():
     if not filename:
         filename = u'yyyy-mm-dd-your-title-here.md'
     return send_file(md,
-                     attachment_filename=filename,
+                     download_name=filename,
                      as_attachment=True)
 
 
