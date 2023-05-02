@@ -39,8 +39,7 @@ EXCERPT_SEPARATOR = '<!--more-->'
 ### UTILS ###
 ###
 
-@app.before_first_request
-def setup_logging():
+with app.app_context():
     if not app.debug:
         # In production mode, add log handler to sys.stderr.
         app.logger.addHandler(logging.StreamHandler())
