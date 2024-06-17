@@ -140,7 +140,7 @@ def download():
     else:
         head_matter['no-excerpt'] = True
     if request.form['tags']:
-        head_matter['tags'] = request.form['tags'].split(' ')
+        head_matter['tags'] = request.form['tags'].split(',')
     head_matter = dump(head_matter, sort_keys=False)
 
     # assemble the head matter and the markdown
