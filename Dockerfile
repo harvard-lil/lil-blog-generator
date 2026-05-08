@@ -1,25 +1,34 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.12-alpine AS builder
+
+WORKDIR /app
+
+RUN apk add --no-cache build-base libffi-dev openssl-dev
+
+RUN pip install --no-cache-dir poetry poetry-plugin-export
+
+COPY pyproject.toml poetry.lock ./
+
+RUN python -m venv /opt/venv \
+    && poetry export -f requirements.txt --only main --without-hashes -o requirements.txt \
+    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+
+FROM python:3.12-alpine
 
 WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PORT=8080
+    PORT=8080 \
+    PATH="/opt/venv/bin:$PATH"
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential curl \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN pip install --no-cache-dir poetry
-
-COPY pyproject.toml poetry.lock ./
-
-RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction --no-ansi
-
+COPY --from=builder /opt/venv /opt/venv
 COPY . .
 
-RUN useradd -m appuser
+RUN addgroup -S appuser \
+    && adduser -S appuser -G appuser \
+    && chown -R appuser:appuser /app
+
 USER appuser
 
 EXPOSE 8080
