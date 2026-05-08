@@ -23,7 +23,12 @@ ENV PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:$PATH"
 
 COPY --from=builder /opt/venv /opt/venv
+
 COPY . .
+
+RUN apk upgrade --no-cache \
+    && python -m pip install --no-cache-dir --upgrade pip \
+    && rm -rf /usr/local/lib/python3.12/site-packages/pip*
 
 RUN addgroup -S appuser \
     && adduser -S appuser -G appuser \
