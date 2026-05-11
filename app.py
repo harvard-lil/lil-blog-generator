@@ -124,6 +124,11 @@ def landing():
     })
 
 
+@app.route('/health')
+def health():
+    return {"status": "healthy"}, 200
+
+
 @app.route('/download', methods=['POST'])
 @login_required
 def download():
