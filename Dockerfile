@@ -1,4 +1,4 @@
-FROM python:3.12-alpine AS builder
+FROM python:3.13-alpine AS builder
 
 WORKDIR /app
 
@@ -10,10 +10,12 @@ COPY pyproject.toml poetry.lock ./
 
 RUN python -m venv /opt/venv \
     && poetry export -f requirements.txt --only main --without-hashes -o requirements.txt \
-    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt \
+    && rm -rf /opt/venv/lib/python3.13/site-packages/pip* \
+              /opt/venv/bin/pip*
 
 
-FROM python:3.12-alpine
+FROM python:3.13-alpine
 
 WORKDIR /app
 
@@ -27,8 +29,8 @@ COPY --from=builder /opt/venv /opt/venv
 COPY . .
 
 RUN apk upgrade --no-cache \
-    && python -m pip install --no-cache-dir --upgrade pip \
-    && rm -rf /usr/local/lib/python3.12/site-packages/pip*
+    && rm -rf /usr/local/lib/python3.13/site-packages/pip* \
+              /usr/local/bin/pip*
 
 RUN addgroup -S appuser \
     && adduser -S appuser -G appuser \
